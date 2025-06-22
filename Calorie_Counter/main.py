@@ -19,11 +19,6 @@ if __name__ == '__main__':
         logger.critical("Please check your .env file for TELEGRAM_BOT_TOKEN, GEMINI_API_KEY, GOOGLE_SHEET_ID.")
         exit(1)
     
-    logger.debug(f"TELEGRAM_BOT_TOKEN is set: {'Yes' if TELEGRAM_BOT_TOKEN else 'No'}")
-    logger.debug(f"GEMINI_API_KEY is set: {'Yes' if GEMINI_API_KEY else 'No'}")
-    logger.debug(f"GOOGLE_SHEET_ID: {GOOGLE_SHEET_ID}")
-    logger.debug(f"GOOGLE_CREDENTIALS_FILE: {GOOGLE_CREDENTIALS_FILE}")
-
     # Check for credentials file
     if not os.path.exists(GOOGLE_CREDENTIALS_FILE):
         logger.critical(f"CRITICAL: Google credentials file '{GOOGLE_CREDENTIALS_FILE}' not found. Exiting.")
