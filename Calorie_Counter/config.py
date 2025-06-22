@@ -8,6 +8,9 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - [%(funcName)s:%(lineno)d] - %(message)s'
 )
 
+# Silence httpx logs to prevent spamming from telegram bot polling
+logging.getLogger("httpx").setLevel(logging.WARNING)
+
 # Load environment variables from .env file
 load_dotenv()
 

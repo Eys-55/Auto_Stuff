@@ -37,20 +37,16 @@ def append_food_entry(client, food_data):
         
         expected_header = ["Date", "Food Item", "Calories", "Protein (g)", "Carbs (g)", "Fat (g)"]
         
-        try:
-            header_row = sheet.row_values(1)
-        except gspread.exceptions.APIError:
-            # This can happen if the sheet is completely empty.
-            header_row = []
+        all_values = sheet.get_all_values()
 
         # Ensure header row exists and is correct
-        if not header_row:
+        if not all_values:
             sheet.append_row(expected_header)
             logger.info("Created header row in Google Sheet.")
-        elif header_row != expected_header:
+        elif all_values[0] != expected_header:
             logger.error(
                 f"Google Sheet header is incorrect. "
-                f"Expected: {expected_header}, but found: {header_row}. "
+                f"Expected: {expected_header}, but found: {all_values[0]}. "
                 "Please fix the header in your Google Sheet. Not logging entry."
             )
             return False

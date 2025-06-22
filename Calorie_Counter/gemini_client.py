@@ -27,10 +27,11 @@ The JSON object should have the following structure:
     "fat": <fat_in_grams_as_integer>
   }
 }
-If you cannot determine the food item or its nutritional information from the input,
-return a JSON object with null values for all fields.
+Based on the input, provide a reasonable estimate for the nutritional values. If you cannot determine the food item, return a JSON object with null values. Do your best to estimate even with limited information.
 Example for "an apple":
 {"food_item":"Apple","calories":95,"macros":{"protein":0,"carbohydrates":25,"fat":0}}
+Example for "a bowl of spaghetti bolognese":
+{"food_item":"Spaghetti Bolognese (1 bowl)","calories":600,"macros":{"protein":30,"carbohydrates":75,"fat":20}}
 """
 
 QUERY_PROMPT_TEMPLATE = """
