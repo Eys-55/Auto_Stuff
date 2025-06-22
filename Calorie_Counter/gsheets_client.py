@@ -35,12 +35,25 @@ def append_food_entry(client, food_data):
     try:
         sheet = client.open_by_key(GOOGLE_SHEET_ID).sheet1
         
-        # Ensure header row exists
-        header_row = sheet.row_values(1)
+        expected_header = ["Date", "Food Item", "Calories", "Protein (g)", "Carbs (g)", "Fat (g)"]
+        
+        try:
+            header_row = sheet.row_values(1)
+        except gspread.exceptions.APIError:
+            # This can happen if the sheet is completely empty.
+            header_row = []
+
+        # Ensure header row exists and is correct
         if not header_row:
-            header = ["Date", "Food Item", "Calories", "Protein (g)", "Carbs (g)", "Fat (g)"]
-            sheet.append_row(header)
+            sheet.append_row(expected_header)
             logger.info("Created header row in Google Sheet.")
+        elif header_row != expected_header:
+            logger.error(
+                f"Google Sheet header is incorrect. "
+                f"Expected: {expected_header}, but found: {header_row}. "
+                "Please fix the header in your Google Sheet. Not logging entry."
+            )
+            return False
 
         # Prepare row data
         row_to_insert = [
@@ -74,13 +87,26 @@ def get_entries_by_date_range(client, start_date_str: str, end_date_str: str):
         end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
         
         sheet = client.open_by_key(GOOGLE_SHEET_ID).sheet1
-        records = sheet.get_all_records()
+        all_values = sheet.get_all_values()
+
+        if not all_values:
+            logger.info("The Google Sheet is empty. No entries to process.")
+            return []
+
+        header = all_values[0]
+        expected_header = ["Date", "Food Item", "Calories", "Protein (g)", "Carbs (g)", "Fat (g)"]
+        if header != expected_header:
+            logger.error(f"Google Sheet header is incorrect! Expected: {expected_header}, but found: {header}. Cannot process entries. Please fix the header in your Google Sheet.")
+            return None # Return None to indicate an error state
+
+        records = [dict(zip(header, row)) for row in all_values[1:]]
 
         filtered_entries = []
         for record in records:
             try:
                 entry_date_str = record.get("Date")
                 if not entry_date_str:
+                    logger.warning(f"Skipping row because 'Date' column is missing or empty. Record: {record}")
                     continue
                 
                 entry_date = datetime.strptime(entry_date_str, "%Y-%m-%d %H:%M:%S").date()
