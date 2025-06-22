@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+pip-selfcheck.json
+
+# Environment
+.env
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+
+# Other
+credentials.json
+*.log
+*.tmp
